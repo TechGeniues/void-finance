@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>VOID — Finance OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div class="shell">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">▪</div>
+      <div class="logo-text">VOID</div>
+    </div>
+    <nav>
+      <button class="nav-btn active" onclick="go('dashboard',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" onclick="go('transactions',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        Transactions
+      </button>
+      <button class="nav-btn" onclick="go('budget',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Budget
+      </button>
+      <button class="nav-btn add-btn" onclick="go('add',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add Entry
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="foot-line">Finance OS</div>
+      <div class="foot-line dim">by Void · v1.0</div>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section id="dashboard" class="page active">
+      <div class="page-head">
+        <div>
+          <h1>Overview</h1>
+          <p class="sub" id="today-date"></p>
+        </div>
+        <div class="pill">This Month</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-lbl">Net Balance</div>
+          <div class="kpi-val" id="kpi-balance">$0.00</div>
+          <div class="kpi-sub" id="kpi-bal-sub">All time</div>
+        </div>
+        <div class="kpi kpi-green">
+          <div class="kpi-lbl">Income</div>
+          <div class="kpi-val green" id="kpi-income">$0.00</div>
+          <div class="kpi-sub" id="kpi-inc-sub">0 entries</div>
+        </div>
+        <div class="kpi kpi-red">
+          <div class="kpi-lbl">Expenses</div>
+          <div class="kpi-val red" id="kpi-expense">$0.00</div>
+          <div class="kpi-sub" id="kpi-exp-sub">0 entries</div>
+        </div>
+        <div class="kpi kpi-yellow">
+          <div class="kpi-lbl">Savings Rate</div>
+          <div class="kpi-val yellow" id="kpi-savings">0%</div>
+          <div class="kpi-sub">of monthly income</div>
+        </div>
+      </div>
+
+      <div class="dash-row">
+        <div class="card wide">
+          <div class="card-top"><span class="card-ttl">Spending by Category</span><span class="card-hint">this month</span></div>
+          <div id="cat-bars"></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><span class="card-ttl">Recent Activity</span><button class="card-link" onclick="go('transactions',document.querySelector('[onclick*=transactions]'))">all →</button></div>
+          <div id="recent-list" class="txlist"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top"><span class="card-ttl">Budget Health</span><span class="card-hint">monthly limits</span></div>
+        <div id="budget-bars"></div>
+      </div>
+    </section>
+
+    <!-- TRANSACTIONS -->
+    <section id="transactions" class="page">
+      <div class="page-head">
+        <div><h1>Transactions</h1><p class="sub">Full history</p></div>
+        <div class="filter-row">
+          <select id="f-type" onchange="renderTxPage()"><option value="all">All types</option><option value="income">Income</option><option value="expense">Expense</option></select>
+          <select id="f-cat" onchange="renderTxPage()"><option value="all">All categories</option></select>
+        </div>
+      </div>
+      <div class="card"><div id="all-tx" class="txlist lg"></div></div>
+    </section>
+
+    <!-- BUDGET -->
+    <section id="budget" class="page">
+      <div class="page-head"><div><h1>Budget Manager</h1><p class="sub">Set monthly spending limits</p></div></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-top"><span class="card-ttl">New Budget Limit</span></div>
+          <form class="form" onsubmit="saveBudget(event)">
+            <div class="field"><label>Category</label>
+              <select id="b-cat"><option>Housing</option><option>Food</option><option>Transport</option><option>Entertainment</option><option>Health</option><option>Shopping</option><option>Utilities</option><option>Other</option></select>
+            </div>
+            <div class="field"><label>Monthly Limit ($)</label>
+              <input type="number" id="b-amt" placeholder="500.00" min="1" step="0.01" required/>
+            </div>
+            <button type="submit" class="submit-btn">Set Budget</button>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-top"><span class="card-ttl">Active Limits</span></div>
+          <div id="b-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADD -->
+    <section id="add" class="page">
+      <div class="page-head"><div><h1>Add Entry</h1><p class="sub">Log a transaction</p></div></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="type-switch">
+            <button class="type-btn active" id="tb-exp" onclick="setTxType('expense',this)">Expense</button>
+            <button class="type-btn" id="tb-inc" onclick="setTxType('income',this)">Income</button>
+          </div>
+          <form class="form" onsubmit="addTx(event)" style="margin-top:1.25rem">
+            <div class="field"><label>Description</label>
+              <input type="text" id="tx-desc" placeholder="e.g. Netflix subscription" required/>
+            </div>
+            <div class="field"><label>Amount ($)</label>
+              <input type="number" id="tx-amt" placeholder="0.00" min="0.01" step="0.01" required/>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Category</label>
+                <select id="tx-cat"><option>Housing</option><option>Food</option><option>Transport</option><option>Entertainment</option><option>Health</option><option>Shopping</option><option>Utilities</option><option>Salary</option><option>Freelance</option><option>Other</option></select>
+              </div>
+              <div class="field"><label>Date</label>
+                <input type="date" id="tx-date" required/>
+              </div>
+            </div>
+            <button type="submit" class="submit-btn">Add Transaction</button>
+          </form>
+          <div id="tx-feedback" class="feedback"></div>
+        </div>
+        <div class="card">
+          <div class="card-top"><span class="card-ttl">This Month at a Glance</span></div>
+          <div id="add-glance"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
