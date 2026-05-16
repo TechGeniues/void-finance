@@ -36,8 +36,8 @@ open index.html
 
 1. Push repo to GitHub (public)
 2. Settings → Pages → Source: main / root
-3. Live at `https://TechGeniues.github.io/void-finance`
+3. Live at `https://[YOUR-USERNAME].github.io/void-finance`
 
 ---
 
-Built by **Void** for Contra portfolio · 2024
+
